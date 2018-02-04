@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using AutoMapper;
 using AzureStorage.Tables;
 using Common.Log;
 using Lykke.Common.ApiLibrary.Middleware;
@@ -9,10 +10,10 @@ using Lykke.Common.ApiLibrary.Swagger;
 using Lykke.Logs;
 using Lykke.Service.PayInternal.Core.Services;
 using Lykke.Service.PayInternal.Core.Settings;
+using Lykke.Service.PayInternal.Filters;
 using Lykke.Service.PayInternal.Modules;
 using Lykke.SettingsReader;
 using Lykke.SlackNotification.AzureQueue;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -51,14 +52,29 @@ namespace Lykke.Service.PayInternal
                 services.AddSwaggerGen(options =>
                 {
                     options.DefaultLykkeConfiguration("v1", "PayInternal API");
+                    options.OperationFilter<FileUploadOperationFilter>();
+                    
                 });
 
+                Mapper.Initialize(cfg =>
+                {
+                    cfg.AddProfiles(typeof(AutoMapperProfile));
+                });
+
+                Mapper.AssertConfigurationIsValid();
+                
                 var builder = new ContainerBuilder();
                 var appSettings = Configuration.LoadSettings<AppSettings>();
 
                 Log = CreateLogWithSlack(services, appSettings);
 
-                builder.RegisterModule(new ServiceModule(appSettings.Nested(x => x.PayInternalService), Log));
+                builder.RegisterModule(new AzureRepositories.AutofacModule(
+                    appSettings.Nested(o => o.PayInternalService.Db.MerchantOrderConnString),
+                    appSettings.Nested(o => o.PayInternalService.Db.MerchantConnString),
+                    appSettings.Nested(o => o.PayInternalService.Db.PaymentRequestConnString),
+                    Log));
+                builder.RegisterModule(new Services.AutofacModule(appSettings.CurrentValue.PayInternalService.OrderExpiration));
+                builder.RegisterModule(new ServiceModule(appSettings, Log));
                 builder.Populate(services);
                 ApplicationContainer = builder.Build();
 
