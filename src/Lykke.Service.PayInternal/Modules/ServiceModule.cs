@@ -158,6 +158,12 @@ namespace Lykke.Service.PayInternal.Modules
                 .As<IStartable>()
                 .SingleInstance()
                 .WithParameter(TypedParameter.From(_settings.CurrentValue.PayInternalService.Rabbit));
+
+            builder.RegisterType<TransferRequestPublisher>()
+                .As<ITransferRequestPublisher>()
+                .As<IStartable>()
+                .SingleInstance()
+                .WithParameter(TypedParameter.From(_settings.CurrentValue.PayInternalService.Rabbit));
         }
 
         private void RegisterMapperValueResolvers(ContainerBuilder builder)
