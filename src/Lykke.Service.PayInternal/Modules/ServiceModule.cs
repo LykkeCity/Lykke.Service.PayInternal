@@ -77,8 +77,11 @@ namespace Lykke.Service.PayInternal.Modules
                     "MerchantWalletTransactions", _log)));
 
             builder.RegisterInstance<ITransferRepository>(new TransferRepository(
-                AzureTableStorage<TransferEntity>.Create(_dbSettings.ConnectionString(x => x.TransferConnString),
+                AzureTableStorage<TransferEntity>.Create(
+                    _dbSettings.ConnectionString(x => x.MerchantConnString),
                     "Transfers", _log)));
+
+            
         }
 
         private void RegisterAppServices(ContainerBuilder builder)

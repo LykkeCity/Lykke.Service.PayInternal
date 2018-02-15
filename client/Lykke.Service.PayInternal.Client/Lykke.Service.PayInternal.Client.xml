@@ -567,5 +567,55 @@
             An error occurred during processing payment request.
             </summary>
         </member>
+        <member name="T:Lykke.Service.PayInternal.Client.Models.Transfer.TransferStatus">
+            <summary>
+            Transfer Status
+            </summary>
+        </member>
+        <member name="F:Lykke.Service.PayInternal.Client.Models.Transfer.TransferStatus.InProgress">
+            <summary>
+            In Progress. The status apply if the transaction was registred in blockchain successful 
+            </summary>
+        </member>
+        <member name="F:Lykke.Service.PayInternal.Client.Models.Transfer.TransferStatus.Completed">
+            <summary>
+            Completed. The status apply when PRC transaction does have enought comfirmations
+            </summary>
+        </member>
+        <member name="F:Lykke.Service.PayInternal.Client.Models.Transfer.TransferStatus.Error">
+            <summary>
+            Error. The status apply when somthing wrong happens
+            </summary>
+        </member>
+        <member name="T:Lykke.Service.PayInternal.Client.Models.Transfer.TransferStatusError">
+            <summary>
+            Transfer status error. If Transfer status is error, the property describe why. If status is not Error - NotError present.
+            </summary>
+        </member>
+        <member name="F:Lykke.Service.PayInternal.Client.Models.Transfer.TransferStatusError.NotError">
+            <summary>
+            No errors. If status of transaction request is not Error.
+            </summary>
+        </member>
+        <member name="F:Lykke.Service.PayInternal.Client.Models.Transfer.TransferStatusError.NotConfirmed">
+            <summary>
+            Transaction is not confirmed.
+            </summary>
+        </member>
+        <member name="F:Lykke.Service.PayInternal.Client.Models.Transfer.TransferStatusError.InvalidAmount">
+            <summary>
+            Show invalid amount. Means source wallets could have not enought amount or amount is not enought to pay fee.
+            </summary>
+        </member>
+        <member name="F:Lykke.Service.PayInternal.Client.Models.Transfer.TransferStatusError.InvalidAddress">
+            <summary>
+            Invalid address.
+            </summary>
+        </member>
+        <member name="F:Lykke.Service.PayInternal.Client.Models.Transfer.TransferStatusError.InternalError">
+            <summary>
+            Any other errors. Take a look thow the logs.
+            </summary>
+        </member>
     </members>
 </doc>
