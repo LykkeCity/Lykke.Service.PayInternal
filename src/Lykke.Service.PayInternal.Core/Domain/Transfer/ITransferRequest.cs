@@ -6,7 +6,7 @@ namespace Lykke.Service.PayInternal.Core.Domain.Transfer
 {
     /// <summary>
     /// Base transfer object
-    /// </summary>
+   /// </summary>
     public interface ITransferRequest
     {
         /// <summary>
@@ -33,5 +33,10 @@ namespace Lykke.Service.PayInternal.Core.Domain.Transfer
         /// Merchant Id
         /// </summary>
         string MerchantId { get; set; }
+        /// <summary>
+        /// Creates a deep copy of this transfer request
+        /// </summary>
+        /// <returns>A new transfer request object.</returns>
+        ITransferRequest DeepCopy();
     }
 }
