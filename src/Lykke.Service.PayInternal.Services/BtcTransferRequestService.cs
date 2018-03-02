@@ -69,7 +69,7 @@ namespace Lykke.Service.PayInternal.Services
             await _transferRequestPublisher.PublishAsync(transferRequestUpdated);
 
             // The main work
-            foreach (ITransactionRequest tran in transferRequestUpdated.TransactionRequests)
+            foreach (var tran in transferRequestUpdated.TransactionRequests)
             {
                 var sourceAddresses = (from s in tran.SourceAmounts
                                        select new ToOneAddress(s.Address, s.Amount)).ToList();
@@ -141,7 +141,7 @@ namespace Lykke.Service.PayInternal.Services
 
             foreach (var transaction in transferRequest.TransactionRequests)
             {
-                List<IAddressAmount> sources = new List<IAddressAmount>();
+                var sources = new List<IAddressAmount>();
                 if (transaction.SourceAmounts == null || !transaction.SourceAmounts.Any())
                 {
                     sources.AddRange(CalculateSources(
@@ -234,9 +234,9 @@ namespace Lykke.Service.PayInternal.Services
                     transferRequest.TransactionRequests);
             }
 
-            foreach (ITransactionRequest tran in transferRequest.TransactionRequests)
+            foreach (var tran in transferRequest.TransactionRequests)
             {
-                foreach (IAddressAmount item in tran.SourceAmounts)
+                foreach (var item in tran.SourceAmounts)
                 {
                     if (!wallets.Any(w => w.Address == item.Address))
                     {

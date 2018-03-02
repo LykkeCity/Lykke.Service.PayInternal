@@ -17,7 +17,7 @@ namespace Lykke.Service.PayInternal.AzureRepositories.Transaction
 
         public async Task<IReadOnlyList<IBlockchainTransaction>> GetAsync(string walletAddress)
         {
-            IEnumerable<BlockchainTransactionEntity> entities =
+            var entities =
                 await _storage.GetDataAsync(GetPartitionKey(walletAddress));
 
             return entities.ToList();

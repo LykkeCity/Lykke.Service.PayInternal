@@ -7,7 +7,7 @@ namespace Lykke.Service.PayInternal.Core.Domain.Transfer
     /// <summary>
     /// Full transfer object. Contain full transaction fields
     /// </summary>
-    public interface ITransferInfo: ITransfer
+    public interface ITransferInfo
     {
         /// <summary>
         /// List of source amount pairs.

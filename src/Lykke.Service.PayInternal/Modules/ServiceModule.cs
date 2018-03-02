@@ -108,6 +108,9 @@ namespace Lykke.Service.PayInternal.Modules
 
             builder.RegisterType<BtcTransferService>()
                 .As<IBtcTransferService>();
+
+            builder.RegisterType<BtcTransferRequestService>()
+                .As<ITransferRequestService>();
         }
 
         private void RegisterServiceClients(ContainerBuilder builder)
