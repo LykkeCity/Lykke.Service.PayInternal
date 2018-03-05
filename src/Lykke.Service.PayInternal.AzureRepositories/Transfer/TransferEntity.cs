@@ -18,10 +18,6 @@ namespace Lykke.Service.PayInternal.AzureRepositories.Transfer
                         transferRequest.CreateDate,
                         transferRequestTransaction)).ToList();
         }
-        public TransferEntity()
-        {
-            ETag = "*";
-        }
 
         private TransferEntity(
             string transferId,
