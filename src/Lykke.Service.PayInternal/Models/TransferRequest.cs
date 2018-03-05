@@ -33,7 +33,7 @@ namespace Lykke.Service.PayInternal.Models
                 {
                     Amount = tran.Amount,
                     CountConfirm = tran.CountConfirm,
-                    Currency = tran.Currency,
+                    AssetId = tran.AssetId,
                     DestinationAddress = tran.DestinationAddress,
                     TransactionHash = tran.TransactionHash
                 };

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Lykke.Service.PayInternal.Core.Domain.Transfer
@@ -8,7 +6,7 @@ namespace Lykke.Service.PayInternal.Core.Domain.Transfer
     /// <summary>
     /// Repository for transfer entity
     /// </summary>
-    public interface ITransferRepository
+    public interface ITransferRequestRepository
     {
         /// <summary>
         /// Get all transfers
@@ -32,7 +30,6 @@ namespace Lykke.Service.PayInternal.Core.Domain.Transfer
         /// Save transfer info
         /// </summary>
         /// <param name="transferInfo">Transfer info</param>
-        /// <returns></returns>
-        Task<ITransferRequest> SaveAsync(ITransferRequest transferInfo);
+        Task SaveAsync(ITransferRequest transferInfo);
     }
 }

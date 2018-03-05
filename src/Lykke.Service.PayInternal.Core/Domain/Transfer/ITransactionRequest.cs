@@ -10,6 +10,6 @@ namespace Lykke.Service.PayInternal.Core.Domain.Transfer
         string DestinationAddress { get; set; }
         int CountConfirm { get; set; }
         decimal Amount { get; set; }
-        string Currency { get; set; }
+        string AssetId { get; set; }
     }
 }

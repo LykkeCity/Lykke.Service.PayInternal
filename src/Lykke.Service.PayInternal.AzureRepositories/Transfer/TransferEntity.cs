@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Common;
+﻿using Lykke.AzureStorage.Tables;
 using Lykke.Service.PayInternal.Core.Domain.Transfer;
 using Microsoft.WindowsAzure.Storage.Table;
-using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Lykke.Service.PayInternal.AzureRepositories.Transfer
 {
-    public class TransferEntity : TableEntity
+    public class TransferEntity : AzureTableEntity
     {
         public static List<TransferEntity> Create(ITransferRequest transferRequest)
         {
@@ -40,22 +39,7 @@ namespace Lykke.Service.PayInternal.AzureRepositories.Transfer
             SourceAddresses = transaction.SourceAmounts;
             DestinationAddress = transaction.DestinationAddress;
             Amount = transaction.Amount;
-            Currency = transaction.Currency;
-        }
-
-
-
-        public TransferEntity(TransferEntity transferInfo)
-        {
-            TransferId = transferInfo.TransferId;
-            TransactionHash = transferInfo.TransactionHash;
-            TransferStatus = transferInfo.TransferStatus;
-            TransferStatusError = transferInfo.TransferStatusError;
-            SourceAddresses = transferInfo.SourceAddresses;
-            DestinationAddress = transferInfo.DestinationAddress;
-            Amount = transferInfo.Amount;
-            Currency = transferInfo.Currency;
-
+            Currency = transaction.AssetId;
         }
 
         public string TransferId { get => PartitionKey; set => PartitionKey = value; }
@@ -71,57 +55,5 @@ namespace Lykke.Service.PayInternal.AzureRepositories.Transfer
         public decimal Amount { get; set; }
         public string Currency { get; set; }
         public int CountConfirm { get; set; }
-        public string STransferStatus
-        {
-            get => TransferStatus.ToString();
-            set
-            {
-                TransferStatus result;
-                if (!Enum.TryParse(value, out result))
-                {
-                    result = TransferStatus.Error;
-                }
-                TransferStatus = result;
-            }
-        }
-        public string STransferStatusError
-        {
-            get => TransferStatusError.ToString();
-            set
-            {
-                TransferStatusError result;
-                if (!Enum.TryParse(value, out result))
-                {
-                    result = TransferStatusError.NotError;
-                }
-                TransferStatusError = result;
-            }
-        }
-
-        public string SSourceAddresses
-        {
-            get => SourceAddresses.ToJson();
-            set
-            {
-                var result = new List<IAddressAmount>();
-                try
-                {
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        SourceAddresses = result;
-                        return;
-                    }
-                    result.AddRange(JsonConvert.DeserializeObject<List<SourceAmount>>(value));
-                }
-                catch
-                {
-
-                }
-
-                SourceAddresses = result;
-            }
-        }
-
-       
     }
 }

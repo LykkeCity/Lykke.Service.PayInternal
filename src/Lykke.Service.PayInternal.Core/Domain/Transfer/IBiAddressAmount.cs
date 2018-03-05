@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Lykke.Service.PayInternal.Core.Domain.Transfer
+﻿namespace Lykke.Service.PayInternal.Core.Domain.Transfer
 {
     /// <summary>
     /// Abstract definition for entity describing what amount of asset should be transfered from AND to the mentioned addresses.

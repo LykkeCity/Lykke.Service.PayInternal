@@ -18,14 +18,6 @@ namespace Lykke.Service.PayInternal.Models
         [Required]
         public string MerchantId { get; set; }
         /// <summary>
-        /// The side who pays the fee. If Merchant pays, then the Client receives the full sum
-        /// of money as it is pointed in request for the transfer, and the fee is additionaly 
-        /// paid from Merchant's wallets(s). Alternatively, the Client gets his (money - fee),
-        /// and the Merchant is not responsible for anything.
-        /// </summary>
-        [Required]
-        public TransferFeePayerEnum FeePayer { get; set; }
-        /// <summary>
         /// The list of source addresses, belonging to the Merchant.
         /// </summary>
         [Required]
@@ -80,7 +72,7 @@ namespace Lykke.Service.PayInternal.Models
             {
                 TransferId = Guid.NewGuid().ToString(),
                 TransferStatus = TransferStatus.InProgress,
-                TransferStatusError = TransferStatusError.NotError,
+                TransferStatusError = TransferStatusError.None,
                 CreateDate = DateTime.Now,
                 MerchantId = MerchantId
             };
@@ -88,11 +80,11 @@ namespace Lykke.Service.PayInternal.Models
             result.TransactionRequests = new List<ITransactionRequest>();
             decimal tmpDestinationAmount, iterationAddedAmount;
             // We need some temporary copy of list of sources for we do iteratively change it below.
-            var tmpSources = (from S in Sources
+            var tmpSources = (from s in Sources
                               select new AddressAmount()
                               {
-                                  Address = S.Address,
-                                  Amount = S.Amount
+                                  Address = s.Address,
+                                  Amount = s.Amount
                               }).ToList();
 
             for (int i = 0; i < Destinations.Count; i++)
@@ -100,7 +92,7 @@ namespace Lykke.Service.PayInternal.Models
                 var newMultipleTransaction = new TransactionRequest();
                 newMultipleTransaction.Amount = Destinations[i].Amount;
                 newMultipleTransaction.CountConfirm = 1; // TODO: maybe it would be more awesome to move this constant to settings
-                newMultipleTransaction.Currency = LykkeConstants.BitcoinAssetId;
+                newMultipleTransaction.AssetId = LykkeConstants.BitcoinAssetId;
                 newMultipleTransaction.DestinationAddress = Destinations[i].Address;
                 newMultipleTransaction.SourceAmounts = new List<IAddressAmount>();
                 
@@ -128,13 +120,12 @@ namespace Lykke.Service.PayInternal.Models
                         if (tmpDestinationAmount <= 0) break;
                     }
 
-                    tmpSources.RemoveAll(S => S.Amount <= 0); // Removing all empty Sources. S.Amount can't be < 0, but let it be here to avoid any risk of infinite loop.
+                    tmpSources.RemoveAll(s => s.Amount <= 0); // Removing all empty Sources. S.Amount can't be < 0, but let it be here to avoid any risk of infinite loop.
                 }
 
                 result.TransactionRequests.Add(newMultipleTransaction);
             }
 
-            // Please, note: the FeePayer property is not curretly supported by ITransferRequest and lower levels of infrastructure. Is to be impemented in future.
             return result;
         }
     }

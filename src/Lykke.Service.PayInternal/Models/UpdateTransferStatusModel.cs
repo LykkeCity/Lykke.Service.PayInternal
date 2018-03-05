@@ -8,8 +8,8 @@ namespace Lykke.Service.PayInternal.Models
         [Required]
         public string TransferId { get; set; }
         [Required]
-        public string TransactionHash { get; set; }
         public TransferStatus TransferStatus { get; set; }
+        [Required]
         public TransferStatusError TransferStatusError { get; set; }
 
         public ITransferRequest ToTransferRequest()

@@ -1,6 +1,4 @@
-using System;
-
-namespace Lykke.Service.PayInternal.Client 
+﻿namespace Lykke.Service.PayInternal.Client
 {
     public class PayInternalServiceClientSettings 
     {

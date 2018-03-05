@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Lykke.Service.PayInternal.Core.Domain.Transfer
 {
@@ -22,8 +20,8 @@ namespace Lykke.Service.PayInternal.Core.Domain.Transfer
         /// </summary>
         decimal Amount { get; set; }
         /// <summary>
-        /// Currency
+        /// AssetId
         /// </summary>
-        string Currency { get; set; }
+        string AssetId { get; set; }
     }
 }

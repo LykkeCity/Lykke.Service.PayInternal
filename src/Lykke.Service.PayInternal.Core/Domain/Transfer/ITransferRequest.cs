@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Lykke.Service.PayInternal.Core.Domain.Transfer
 {
     /// <summary>
     /// Base transfer object
-   /// </summary>
+    /// </summary>
     public interface ITransferRequest
     {
         /// <summary>

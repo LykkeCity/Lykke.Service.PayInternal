@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Lykke.Service.PayInternal.Core.Domain.Transfer;
 using System.Threading.Tasks;
-using Lykke.Service.PayInternal.Core.Domain.Transfer;
 
 namespace Lykke.Service.PayInternal.Core.Services
 {
@@ -11,14 +8,6 @@ namespace Lykke.Service.PayInternal.Core.Services
     /// </summary>
     public interface ITransferRequestService
     {
-        /// <summary>
-        /// Create transfer using transfer request.
-        /// </summary>
-        /// <param name="transferRequest">transfer request</param>
-        /// <returns></returns>
-
-        Task<ITransferRequest> CreateTransferAsync(ITransferRequest transferRequest);
-
         /// <summary>
         /// Create crosswise transfer using transfer request
         /// </summary>
@@ -46,7 +35,7 @@ namespace Lykke.Service.PayInternal.Core.Services
         /// <summary>
         /// Get transfer entity
         /// </summary>
-        /// <param name="transfer">shord transfer structure</param>
+        /// <param name="transferId">shord transfer structure</param>
         /// <returns></returns>
 
         Task<ITransferRequest> GetTransferInfoAsync(string transferId);

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Autofac;
+﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AzureStorage.Tables;
 using Common;
@@ -10,10 +8,8 @@ using Lykke.Service.Assets.Client;
 using Lykke.Service.Assets.Client.Models;
 using Lykke.Service.MarketProfile.Client;
 using Lykke.Service.PayInternal.AzureRepositories.Transaction;
-using Lykke.Service.PayInternal.AzureRepositories.Transfer;
 using Lykke.Service.PayInternal.AzureRepositories.Wallet;
 using Lykke.Service.PayInternal.Core.Domain.Transaction;
-using Lykke.Service.PayInternal.Core.Domain.Transfer;
 using Lykke.Service.PayInternal.Core.Domain.Wallet;
 using Lykke.Service.PayInternal.Core.Services;
 using Lykke.Service.PayInternal.Core.Settings;
@@ -22,7 +18,8 @@ using Lykke.Service.PayInternal.Rabbit.Publishers;
 using Lykke.Service.PayInternal.Services;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.DependencyInjection;
-using QBitNinja.Client;
+using System;
+using System.Linq;
 using DbSettings = Lykke.Service.PayInternal.Core.Settings.ServiceSettings.DbSettings;
 
 namespace Lykke.Service.PayInternal.Modules
@@ -33,6 +30,7 @@ namespace Lykke.Service.PayInternal.Modules
         private readonly IReloadingManager<DbSettings> _dbSettings;
         private readonly ILog _log;
         // NOTE: you can remove it if you don't need to use IServiceCollection extensions to register service specific dependencies
+        // ReSharper disable once CollectionNeverUpdated.Local
         private readonly IServiceCollection _services;
 
         public ServiceModule(IReloadingManager<AppSettings> settings, ILog log)
@@ -75,13 +73,6 @@ namespace Lykke.Service.PayInternal.Modules
                 AzureTableStorage<BlockchainTransactionEntity>.Create(
                     _dbSettings.ConnectionString(x => x.MerchantConnString),
                     "MerchantWalletTransactions", _log)));
-
-            builder.RegisterInstance<ITransferRepository>(new TransferRepository(
-                AzureTableStorage<TransferEntity>.Create(
-                    _dbSettings.ConnectionString(x => x.MerchantConnString),
-                    "Transfers", _log)));
-
-            
         }
 
         private void RegisterAppServices(ContainerBuilder builder)

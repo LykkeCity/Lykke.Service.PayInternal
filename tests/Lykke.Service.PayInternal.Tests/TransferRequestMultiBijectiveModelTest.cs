@@ -1,10 +1,7 @@
-﻿using Lykke.Service.PayInternal.Core.Domain.Transfer;
-using Lykke.Service.PayInternal.Models;
+﻿using Lykke.Service.PayInternal.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Lykke.Service.PayInternal.Tests
 {
@@ -18,8 +15,7 @@ namespace Lykke.Service.PayInternal.Tests
             // Arrange
             var testObject = new TransferRequestMultiBijectiveModel()
             {
-                MerchantId = "some-merchant-id",
-                FeePayer = TransferFeePayerEnum.Merchant
+                MerchantId = "some-merchant-id"
             };
 
             testObject.BiAddresses = new List<BiAddressAmount>();
@@ -48,8 +44,7 @@ namespace Lykke.Service.PayInternal.Tests
             // Arrange
             var testObject = new TransferRequestMultiBijectiveModel()
             {
-                MerchantId = "some-merchant-id",
-                FeePayer = TransferFeePayerEnum.Merchant
+                MerchantId = "some-merchant-id"
             };
 
             testObject.BiAddresses = new List<BiAddressAmount>();

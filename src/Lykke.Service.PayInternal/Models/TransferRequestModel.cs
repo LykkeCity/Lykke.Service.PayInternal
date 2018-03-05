@@ -11,12 +11,12 @@ namespace Lykke.Service.PayInternal.Models
         public TransferRequestModel()
         {
             Amount = 0;
-            Currency = LykkeConstants.BitcoinAssetId;
+            AssetId = LykkeConstants.BitcoinAssetId;
         }
         public string MerchantId { get; set; }
         public string DestinationAddress { get; set; }
         public decimal Amount { get; set; }
-        public string Currency { get; set; }
+        public string AssetId { get; set; }
 
         public virtual ITransferRequest ToTransferRequest()
         {
@@ -24,7 +24,7 @@ namespace Lykke.Service.PayInternal.Models
             {
                 TransferId = Guid.NewGuid().ToString(),
                 TransferStatus = TransferStatus.InProgress,
-                TransferStatusError = TransferStatusError.NotError,
+                TransferStatusError = TransferStatusError.None,
                 CreateDate = DateTime.Now,
                 MerchantId = MerchantId,
                 TransactionRequests = new List<ITransactionRequest>()
@@ -33,7 +33,7 @@ namespace Lykke.Service.PayInternal.Models
                     {
                         DestinationAddress = DestinationAddress,
                         Amount = Amount,
-                        Currency = Currency
+                        AssetId = AssetId
                     }
                 }
             };

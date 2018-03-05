@@ -1,14 +1,14 @@
 ﻿namespace Lykke.Service.PayInternal.Core.Domain.Transfer
 {
     /// <summary>
-    /// Transfer status error. If Transfer status is error, the property describe why. If status is not Error - NotError present.
+    /// Transfer status error. If Transfer status is error, the property describe why. If status is not Error - None present.
     /// </summary>
     public enum TransferStatusError
     {
         /// <summary>
         /// No errors. If status of transaction request is not Error.
         /// </summary>
-        NotError = 0,
+        None = 0,
         /// <summary>
         /// Transaction is not confirmed.
         /// </summary>

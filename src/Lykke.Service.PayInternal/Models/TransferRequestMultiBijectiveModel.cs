@@ -3,6 +3,7 @@ using Lykke.Service.PayInternal.Core.Domain.Transfer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace Lykke.Service.PayInternal.Models
 {
@@ -17,14 +18,6 @@ namespace Lykke.Service.PayInternal.Models
         [Required]
         public string MerchantId { get; set; }
         /// <summary>
-        /// The side who pays the fee. If Merchant pays, then the Client receives the full sum
-        /// of money as it is pointed in request for the transfer, and the fee is additionaly 
-        /// paid from Merchant's wallets(s). Alternatively, the Client gets his (money - fee),
-        /// and the Merchant is not responsible for anything.
-        /// </summary>
-        [Required]
-        public TransferFeePayerEnum FeePayer { get; set; }
-        /// <summary>
         /// The list of pair addresses for source-destination with the amount of transfer specified.
         /// </summary>
         [Required]
@@ -38,11 +31,7 @@ namespace Lykke.Service.PayInternal.Models
         /// * if one of bijective addresses has amount less than or equal to 0.</remarks>
         public string CheckAmountsValidity()
         {
-            foreach (BiAddressAmount biad in BiAddresses)
-            {
-                if (biad.Amount <= 0)
-                    return "Some destination address has the requested transfer amount <= 0. The transfer is impossible.";
-            }
+            if (BiAddresses.Any(x => x.Amount < 0)) return "Some destination address has the requested transfer amount <= 0. The transfer is impossible.";
 
             return null; // No errors on this level of analysis. But transfer may fail deeper for some reasons.
         }
@@ -60,7 +49,7 @@ namespace Lykke.Service.PayInternal.Models
             {
                 TransferId = Guid.NewGuid().ToString(),
                 TransferStatus = TransferStatus.InProgress,
-                TransferStatusError = TransferStatusError.NotError,
+                TransferStatusError = TransferStatusError.None,
                 CreateDate = DateTime.Now,
                 MerchantId = MerchantId
             };
@@ -73,7 +62,7 @@ namespace Lykke.Service.PayInternal.Models
                 var newTransaction = new TransactionRequest();
                 newTransaction.Amount = biad.Amount;
                 newTransaction.CountConfirm = 1; // TODO: maybe it would be more awesome to move this constant to settings
-                newTransaction.Currency = LykkeConstants.BitcoinAssetId;
+                newTransaction.AssetId = LykkeConstants.BitcoinAssetId;
                 newTransaction.DestinationAddress = biad.DestinationAddress;
                 newTransaction.SourceAmounts = new List<IAddressAmount>();
 
@@ -86,7 +75,6 @@ namespace Lykke.Service.PayInternal.Models
                 result.TransactionRequests.Add(newTransaction);
             }
 
-            // Please, note: the FeePayer property is not curretly supported by ITransferRequest and lower levels of infrastructure. Is to be impemented in future.
             return result;
         }
     }

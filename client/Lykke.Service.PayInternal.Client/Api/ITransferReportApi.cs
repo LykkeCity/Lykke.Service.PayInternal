@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Lykke.Service.PayInternal.Client.Models.Transfer;
+﻿using Lykke.Service.PayInternal.Client.Models.Transfer;
 using Refit;
+using System.Threading.Tasks;
 
 namespace Lykke.Service.PayInternal.Client.Api
 {
@@ -11,5 +8,8 @@ namespace Lykke.Service.PayInternal.Client.Api
     {
         [Post("/api/transfers/updateStatus")]
         Task<TransferRequest> UpdateTransferStatusAsync([Body] UpdateTransferStatusModel model);
+
+        [Get("/api/transfers/{transferId}/getStatus")]
+        Task<TransferRequest> GetTransferStatusAsync(string transferId);
     }
 }

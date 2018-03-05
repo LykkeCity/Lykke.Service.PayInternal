@@ -1,5 +1,4 @@
-﻿using Lykke.Service.PayInternal.Core.Domain.Transfer;
-using Lykke.Service.PayInternal.Models;
+﻿using Lykke.Service.PayInternal.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +15,7 @@ namespace Lykke.Service.PayInternal.Tests
             // Arrange
             var testObject = new TransferRequestCrosswiseModel()
             {
-                MerchantId = "some-merchant-id",
-                FeePayer = TransferFeePayerEnum.Merchant
+                MerchantId = "some-merchant-id"
             };
 
             testObject.Sources = new List<AddressAmount>();
@@ -49,8 +47,7 @@ namespace Lykke.Service.PayInternal.Tests
             // Arrange
             var testObject = new TransferRequestCrosswiseModel()
             {
-                MerchantId = "some-merchant-id",
-                FeePayer = TransferFeePayerEnum.Merchant
+                MerchantId = "some-merchant-id"
             };
 
             testObject.Sources = new List<AddressAmount>();
@@ -84,8 +81,7 @@ namespace Lykke.Service.PayInternal.Tests
             // Arrange
             var testObject = new TransferRequestCrosswiseModel()
             {
-                MerchantId = "some-merchant-id",
-                FeePayer = TransferFeePayerEnum.Merchant
+                MerchantId = "some-merchant-id"
             };
 
             testObject.Sources = new List<AddressAmount>();
@@ -113,8 +109,7 @@ namespace Lykke.Service.PayInternal.Tests
             // Arrange
             var testObject = new TransferRequestCrosswiseModel()
             {
-                MerchantId = "some-merchant-id",
-                FeePayer = TransferFeePayerEnum.Merchant
+                MerchantId = "some-merchant-id"
             };
 
             testObject.Sources = new List<AddressAmount>();
@@ -142,8 +137,7 @@ namespace Lykke.Service.PayInternal.Tests
             // Arrange
             var testObject = new TransferRequestCrosswiseModel()
             {
-                MerchantId = "some-merchant-id",
-                FeePayer = TransferFeePayerEnum.Merchant
+                MerchantId = "some-merchant-id"
             };
 
             testObject.Sources = new List<AddressAmount>();

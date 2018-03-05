@@ -1,6 +1,5 @@
-﻿using System;
+﻿using Lykke.Service.PayInternal.Core.Domain.Transfer;
 using System.Collections.Generic;
-using Lykke.Service.PayInternal.Core.Domain.Transfer;
 
 namespace Lykke.Service.PayInternal.Services.Domain
 {
@@ -11,6 +10,6 @@ namespace Lykke.Service.PayInternal.Services.Domain
         public string DestinationAddress { get; set; }
         public int CountConfirm { get; set; }
         public decimal Amount { get; set; }
-        public string Currency { get; set; }
+        public string AssetId { get; set; }
     }
 }

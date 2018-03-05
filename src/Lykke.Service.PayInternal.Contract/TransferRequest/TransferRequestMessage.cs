@@ -5,9 +5,9 @@ using Newtonsoft.Json.Converters;
 
 namespace Lykke.Service.PayInternal.Contract.TransferRequest
 {
-    public class TransferRequestsMessage
+    public class TransferRequestMessage
     {
-        public TransferRequestsMessage()
+        public TransferRequestMessage()
         {
             TransactionRequests = new List<TransactionRequestMessage>();
         }

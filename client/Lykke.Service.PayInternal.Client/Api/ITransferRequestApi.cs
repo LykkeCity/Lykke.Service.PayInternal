@@ -1,27 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Lykke.Common.Api.Contract.Responses;
-using Lykke.Service.PayInternal.Client.Models.Transfer;
+﻿using Lykke.Service.PayInternal.Client.Models.Transfer;
 using Refit;
+using System.Threading.Tasks;
 
 namespace Lykke.Service.PayInternal.Client.Api
 {
+    /// <summary>
+    /// The public client interface for Transfer Request API
+    /// </summary>
     public interface ITransferRequestApi
     {
-        [Post("/api/merchants/{merchantId}/transfersAll/{destinationAddress}")]
-        Task<TransferRequest> TransfersRequestAllAsync(string merchantId, string destinationAddress);
-        [Post("/api/merchants/{merchantId}/transfersAll/{destinationAddress}/amount/{amount}")]
-        Task <TransferRequest> TransfersRequestAmountAsync(string merchantId, string destinationAddress, string amount);
-        [Post("/api/merchants/{merchantId}/transfersFromAddress/{destinationAddress}/amount/{amount}")]
-        Task<TransferRequest> TransfersRequestFromAddressAsync(string merchantId, string destinationAddress, string amount, [Body] string sourceAddress);
-        [Post("/api/merchants/{merchantId}/transfersFromAddresses/{destinationAddress}/amount/{amount}")]
-        Task<TransferRequest> TransfersRequestFromAddressesAsync(string merchantId, string destinationAddress, string amount, [Body] List<string> sourceAddressesList);
-        [Post("/api/merchants/{merchantId}/transfersOnlyFromAddresses/{destinationAddress}")]
-        Task<TransferRequest> TransfersRequestFromAddressesWithAmountAsync(string merchantId, string destinationAddress, [Body] List<SourceAmount> sourceAddressAmountList);
+
+        /// <summary>
+        /// Request transfer from a list of some source address(es) to a list of destination address(es) with amounts specified.
+        /// </summary>
+        /// <param name="transfer">Basic information about the transfer request to be created.</param>
+        /// <returns></returns>
+        [Post("api/merchants/transferCrosswise")]
+        Task<TransferRequest> TransferCrosswiseAsync([Body] TransferCrosswiseModel transfer);
+
+        /// <summary>
+        /// Request transfer consistent of a list of signle-source and single-destination transactions with amounts specified for every address pair.
+        /// </summary>
+        /// <param name="transfer">Basic information about the transfer request to be created.</param>
+        /// <returns></returns>
+        [Post("api/merchants/transferMultiBijective")]
+        Task<TransferRequest> TransferMultiBijectiveAsync([Body] TransferRequestMultiBijectiveModel transfer);
     }
 }

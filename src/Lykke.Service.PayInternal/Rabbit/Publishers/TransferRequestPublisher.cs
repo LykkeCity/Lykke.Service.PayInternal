@@ -17,7 +17,7 @@ namespace Lykke.Service.PayInternal.Rabbit.Publishers
     {
         private readonly ILog _log;
         private readonly RabbitMqSettings _settings;
-        private RabbitMqPublisher<TransferRequestsMessage> _publisher;
+        private RabbitMqPublisher<TransferRequestMessage> _publisher;
 
         public TransferRequestPublisher(
             ILog log,
@@ -29,7 +29,7 @@ namespace Lykke.Service.PayInternal.Rabbit.Publishers
 
         public async Task PublishAsync(ITransferRequest request)
         {
-            var message = Mapper.Map<TransferRequestsMessage>(request);
+            var message = Mapper.Map<TransferRequestMessage>(request);
             message.TransactionRequests = Mapper.Map<List<TransactionRequestMessage>>(request.TransactionRequests);
             foreach (var transactionRequest in message.TransactionRequests)
             {
@@ -41,7 +41,7 @@ namespace Lykke.Service.PayInternal.Rabbit.Publishers
 
       
 
-        public async Task PublishAsync(TransferRequestsMessage message)
+        public async Task PublishAsync(TransferRequestMessage message)
         {
             await _publisher.ProduceAsync(message);
         }
@@ -53,8 +53,8 @@ namespace Lykke.Service.PayInternal.Rabbit.Publishers
 
             settings.MakeDurable();
 
-            _publisher = new RabbitMqPublisher<TransferRequestsMessage>(settings)
-                .SetSerializer(new JsonMessageSerializer<TransferRequestsMessage>())
+            _publisher = new RabbitMqPublisher<TransferRequestMessage>(settings)
+                .SetSerializer(new JsonMessageSerializer<TransferRequestMessage>())
                 .SetPublishStrategy(new DefaultFanoutPublishStrategy(settings))
                 .PublishSynchronously()
                 .SetLogger(_log)

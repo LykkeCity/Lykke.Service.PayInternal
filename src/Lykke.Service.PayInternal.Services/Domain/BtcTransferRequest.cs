@@ -25,7 +25,7 @@ namespace Lykke.Service.PayInternal.Services.Domain
                 TransferId = Guid.NewGuid().ToString(),
                 TransactionRequests = transactions,
                 TransferStatus = TransferStatus.InProgress,
-                TransferStatusError = TransferStatusError.NotError,
+                TransferStatusError = TransferStatusError.None,
                 MerchantId = merchantId,
                 CreateDate = DateTime.Now
             };

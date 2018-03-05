@@ -1,34 +1,30 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using JetBrains.Annotations;
 
 namespace Lykke.Service.PayInternal.Client.Models.Transfer
 {
     /// <summary>
-    /// Represents the data related to the transfer update process.
+    /// Represents the object containing the info about the source address, destination address and the amount to transfer between.
     /// </summary>
-    [UsedImplicitly]
-    public class UpdateTransferStatusModel
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public class BiAddressAmount
     {
         /// <summary>
-        /// ID of the transfer to update.
+        /// Source address
         /// </summary>
         [Required]
         // ReSharper disable once UnusedMember.Global
-        public string TransferId { get; set; }
+        public string SourceAddress { get; set; }
         /// <summary>
-        /// The new state of the transfer.
+        /// Destination address
         /// </summary>
         [Required]
         // ReSharper disable once UnusedMember.Global
-        public TransferStatus TransferStatus { get; set; }
+        public string DestinationAddress { get; set; }
         /// <summary>
-        /// The new error info of the transfer.
+        /// Amount of asset to transfer
         /// </summary>
         [Required]
         // ReSharper disable once UnusedMember.Global
-        public TransferStatusError TransferStatusError { get; set; }
-
-       
+        public decimal Amount { get; set; }
     }
-
 }
