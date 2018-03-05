@@ -10,6 +10,8 @@ using Lykke.Service.PayInternal.Services.Domain;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Lykke.Service.PayInternal.Core.Domain.Merchant;
+using NBitcoin.Protocol;
 
 
 namespace Lykke.Service.PayInternal.Services
@@ -19,6 +21,7 @@ namespace Lykke.Service.PayInternal.Services
 
         private readonly ITransferRequestRepository _transferRequestRepository;
         private readonly IWalletRepository _walletRepository;
+        private readonly IMerchantRepository _merchantRepository;
         private readonly IBitcoinApiClient _bitcointApiClient;
         private readonly ITransferRequestPublisher _transferRequestPublisher;
         private readonly ILog _log;
@@ -28,12 +31,14 @@ namespace Lykke.Service.PayInternal.Services
         public BtcTransferRequestService(
             ITransferRequestRepository transferRequestRepository,
             IWalletRepository walletRepository,
+            IMerchantRepository merchantRepository,
             IBitcoinApiClient bitcointApiClient,
             ITransferRequestPublisher transferRequestPublisher,
             ILog log)
         {
             _transferRequestRepository = transferRequestRepository ?? throw new ArgumentNullException(nameof(transferRequestRepository));
             _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
+            _merchantRepository = merchantRepository ?? throw new ArgumentNullException(nameof(merchantRepository));
             _bitcointApiClient = bitcointApiClient ?? throw new ArgumentNullException(nameof(bitcointApiClient));
             _transferRequestPublisher = transferRequestPublisher ?? throw new ArgumentNullException(nameof(transferRequestPublisher));
             _log = log ?? throw new ArgumentNullException(nameof(log));
@@ -58,6 +63,8 @@ namespace Lykke.Service.PayInternal.Services
             if (sourcesCheckupResult != null)
                 return sourcesCheckupResult;
 
+            var merchant = await _merchantRepository.GetAsync(transferRequest.MerchantId); // After wallets checkup, we know exactly that such a merchant exists
+
             // Here would be no additional validations. If transaction fails, we will know it from the underlying BitcoinApi service.
 
             // Save the initial state of transfer
@@ -70,7 +77,7 @@ namespace Lykke.Service.PayInternal.Services
                 var sourceAddresses = (from s in tran.SourceAmounts
                                        select new ToOneAddress(s.Address, s.Amount)).ToList();
                 // Please, note: feeRate = 0 and fixedFee = 0 here
-                var currentResult = await _bitcointApiClient.TransactionMultipleTransfer(null, tran.DestinationAddress, tran.AssetId, 0, 0, sourceAddresses);
+                var currentResult = await _bitcointApiClient.TransactionMultipleTransfer(null, tran.DestinationAddress, tran.AssetId, merchant.TimeCacheRates, (decimal)merchant.MarkupFixedFee, sourceAddresses);
 
                 if (currentResult == null || currentResult.HasError)
                 {
