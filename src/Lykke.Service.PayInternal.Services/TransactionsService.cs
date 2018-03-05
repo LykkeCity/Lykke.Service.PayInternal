@@ -1,33 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Common.Log;
-using Lykke.Service.PayInternal.Core.Domain.Order;
+﻿using JetBrains.Annotations;
 using Lykke.Service.PayInternal.Core.Domain.PaymentRequest;
 using Lykke.Service.PayInternal.Core.Domain.Transaction;
 using Lykke.Service.PayInternal.Core.Exceptions;
 using Lykke.Service.PayInternal.Core.Services;
 using Lykke.Service.PayInternal.Services.Domain;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Lykke.Service.PayInternal.Services
 {
+    [UsedImplicitly]
     public class TransactionsService : ITransactionsService
     {
         private readonly IBlockchainTransactionRepository _transactionRepository;
         private readonly IPaymentRequestRepository _paymentRequestRepository;
-        private readonly IOrderRepository _orderRepository;
-        private readonly ILog _log;
 
         public TransactionsService(
             IBlockchainTransactionRepository transactionRepository,
-            IPaymentRequestRepository paymentRequestRepository,
-            IOrderRepository ordersRepository,
-            ILog log)
+            IPaymentRequestRepository paymentRequestRepository)
         {
             _transactionRepository = transactionRepository;
             _paymentRequestRepository = paymentRequestRepository;
-            _orderRepository = ordersRepository;
-            _log = log;
         }
 
         public async Task<IEnumerable<IBlockchainTransaction>> GetAsync(string walletAddress)
@@ -46,7 +39,7 @@ namespace Lykke.Service.PayInternal.Services
             {
                 WalletAddress = request.WalletAddress,
                 TransactionId = request.TransactionId,
-                Amount = (decimal)request.Amount,
+                Amount =request.Amount,
                 AssetId = request.AssetId,
                 Confirmations = request.Confirmations,
                 BlockId = request.BlockId,
@@ -66,7 +59,7 @@ namespace Lykke.Service.PayInternal.Services
             if (transaction == null)
                 throw new TransactionNotFoundException(request.TransactionId);
 
-            transaction.Amount = (decimal)request.Amount;
+            transaction.Amount = request.Amount;
             transaction.BlockId = request.BlockId;
             transaction.Confirmations = request.Confirmations;
 

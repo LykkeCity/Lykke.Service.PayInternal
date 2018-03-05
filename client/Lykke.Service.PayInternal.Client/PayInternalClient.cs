@@ -8,6 +8,7 @@ using Lykke.Service.PayInternal.Client.Models;
 using Lykke.Service.PayInternal.Client.Models.Merchant;
 using Lykke.Service.PayInternal.Client.Models.Order;
 using Lykke.Service.PayInternal.Client.Models.PaymentRequest;
+using Lykke.Service.PayInternal.Client.Models.Transfer;
 using Microsoft.Extensions.PlatformAbstractions;
 using Refit;
 
@@ -20,6 +21,8 @@ namespace Lykke.Service.PayInternal.Client
         private readonly IMerchantsApi _merchantsApi;
         private readonly IOrdersApi _ordersApi;
         private readonly IPaymentRequestsApi _paymentRequestsApi;
+        private readonly ITransferReportApi _transferReportApi;
+        private readonly ITransferRequestApi _transferRequestApi;
         private readonly ApiRunner _runner;
 
         public PayInternalClient(PayInternalServiceClientSettings settings)
@@ -46,8 +49,18 @@ namespace Lykke.Service.PayInternal.Client
             _merchantsApi = RestService.For<IMerchantsApi>(_httpClient);
             _ordersApi = RestService.For<IOrdersApi>(_httpClient);
             _paymentRequestsApi = RestService.For<IPaymentRequestsApi>(_httpClient);
+            _transferReportApi = RestService.For<ITransferReportApi>(_httpClient);
+            _transferRequestApi = RestService.For<ITransferRequestApi>(_httpClient);
+
             _runner = new ApiRunner();
         }
+
+        public void Dispose()
+        {
+            _httpClient?.Dispose();
+        }
+
+        #region Bitcoin
 
         public async Task<WalletAddressResponse> CreateAddressAsync(CreateWalletRequest request)
         {
@@ -59,15 +72,18 @@ namespace Lykke.Service.PayInternal.Client
             return await _runner.RunAsync(() => _payInternalApi.GetNotExpiredWalletsAsync());
         }
 
-        public async Task CreateTransaction(CreateTransactionRequest request)
+        #endregion
+
+        #region BtcTransfer
+
+        public async Task<BtcTransferResponse> BtcFreeTransferAsync(BtcFreeTransferRequest request)
         {
-            await _runner.RunAsync(() => _payInternalApi.CreateTransaction(request));
+            return await _runner.RunAsync(() => _paymentRequestsApi.BtcFreeTransferAsync(request));
         }
 
-        public async Task UpdateTransaction(UpdateTransactionRequest request)
-        {
-            await _runner.RunAsync(() => _payInternalApi.UpdateTransaction(request));
-        }
+        #endregion
+
+        #region Merchants
 
         public async Task<IReadOnlyList<MerchantModel>> GetMerchantsAsync()
         {
@@ -100,11 +116,19 @@ namespace Lykke.Service.PayInternal.Client
         {
             await _runner.RunAsync(() => _merchantsApi.DeleteAsync(merchantId));
         }
-        
+
+        #endregion
+
+        #region Orders
+
         public async Task<OrderModel> GetOrderAsync(string merchantId, string paymentRequestId)
         {
             return await _runner.RunAsync(() => _ordersApi.GetByIdAsync(merchantId, paymentRequestId));
         }
+
+        #endregion
+
+        #region PaymentRequests
 
         public async Task<IReadOnlyList<PaymentRequestModel>> GetPaymentRequestsAsync(string merchantId)
         {
@@ -136,14 +160,52 @@ namespace Lykke.Service.PayInternal.Client
             return await _runner.RunAsync(() => _paymentRequestsApi.ChechoutAsync(merchantId, paymentRequestId));
         }
 
-        public async Task<BtcTransferResponse> BtcFreeTransferAsync(BtcFreeTransferRequest request)
+        #endregion
+
+        #region Transactions
+
+        public async Task CreateTransaction(CreateTransactionRequest request)
         {
-            return await _runner.RunAsync(() => _paymentRequestsApi.BtcFreeTransferAsync(request));
+            await _runner.RunAsync(() => _payInternalApi.CreateTransaction(request));
         }
 
-        public void Dispose()
+        public async Task UpdateTransaction(UpdateTransactionRequest request)
         {
-            _httpClient?.Dispose();
+            await _runner.RunAsync(() => _payInternalApi.UpdateTransaction(request));
         }
+
+        #endregion
+
+        #region TransferReport
+
+        /// <inheritdoc />
+        public async Task<TransferRequest> UpdateTransferStatusAsync(UpdateTransferStatusModel update)
+        {
+            return await _runner.RunAsync(() => _transferReportApi.UpdateTransferStatusAsync(update));
+        }
+
+        /// <inheritdoc />
+        public async Task<TransferRequest> GetTransferStatusAsync(string transferId)
+        {
+            return await _runner.RunAsync(() => _transferReportApi.GetTransferStatusAsync(transferId));
+        }
+
+        #endregion
+
+        #region TransferRequest
+
+        /// <inheritdoc />
+        public async Task<TransferRequest> TransferCrosswiseAsync(TransferCrosswiseModel transfer)
+        {
+            return await _runner.RunAsync(() => _transferRequestApi.TransferCrosswiseAsync(transfer));
+        }
+
+        /// <inheritdoc />
+        public async Task<TransferRequest> TransferMultiBijectiveAsync(TransferRequestMultiBijectiveModel transfer)
+        {
+            return await _runner.RunAsync(() => _transferRequestApi.TransferMultiBijectiveAsync(transfer));
+        }
+
+        #endregion
     }
 }

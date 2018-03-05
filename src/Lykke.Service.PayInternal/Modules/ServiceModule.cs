@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Autofac;
+﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AzureStorage.Tables;
 using Common;
@@ -20,6 +18,8 @@ using Lykke.Service.PayInternal.Rabbit.Publishers;
 using Lykke.Service.PayInternal.Services;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Linq;
 using DbSettings = Lykke.Service.PayInternal.Core.Settings.ServiceSettings.DbSettings;
 
 namespace Lykke.Service.PayInternal.Modules
@@ -30,6 +30,7 @@ namespace Lykke.Service.PayInternal.Modules
         private readonly IReloadingManager<DbSettings> _dbSettings;
         private readonly ILog _log;
         // NOTE: you can remove it if you don't need to use IServiceCollection extensions to register service specific dependencies
+        // ReSharper disable once CollectionNeverUpdated.Local
         private readonly IServiceCollection _services;
 
         public ServiceModule(IReloadingManager<AppSettings> settings, ILog log)
@@ -98,6 +99,9 @@ namespace Lykke.Service.PayInternal.Modules
 
             builder.RegisterType<BtcTransferService>()
                 .As<IBtcTransferService>();
+
+            builder.RegisterType<BtcTransferRequestService>()
+                .As<ITransferRequestService>();
         }
 
         private void RegisterServiceClients(ContainerBuilder builder)
@@ -110,6 +114,7 @@ namespace Lykke.Service.PayInternal.Modules
             builder.RegisterType<LykkeMarketProfile>()
                 .As<ILykkeMarketProfile>()
                 .WithParameter("baseUri", new Uri(_settings.CurrentValue.MarketProfileServiceClient.ServiceUrl));
+            
         }
 
         private void RegisterCaches(ContainerBuilder builder)
@@ -147,6 +152,12 @@ namespace Lykke.Service.PayInternal.Modules
 
             builder.RegisterType<PaymentRequestPublisher>()
                 .As<IPaymentRequestPublisher>()
+                .As<IStartable>()
+                .SingleInstance()
+                .WithParameter(TypedParameter.From(_settings.CurrentValue.PayInternalService.Rabbit));
+
+            builder.RegisterType<TransferRequestPublisher>()
+                .As<ITransferRequestPublisher>()
                 .As<IStartable>()
                 .SingleInstance()
                 .WithParameter(TypedParameter.From(_settings.CurrentValue.PayInternalService.Rabbit));
