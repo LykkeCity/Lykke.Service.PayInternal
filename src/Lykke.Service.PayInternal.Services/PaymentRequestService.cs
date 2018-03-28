@@ -161,7 +161,9 @@ namespace Lykke.Service.PayInternal.Services
 
             await _paymentRequestRepository.UpdateAsync(paymentRequest);
 
-            await _paymentRequestPublisher.PublishAsync(paymentRequest);
+            PaymentRequestRefund refundInfo = await GetRefundInfoAsync(paymentRequest.Id);
+
+            await _paymentRequestPublisher.PublishAsync(paymentRequest, refundInfo);
         }
 
         public async Task UpdateStatusByTransactionAsync(string transactionId)
@@ -240,6 +242,15 @@ namespace Lykke.Service.PayInternal.Services
                 //todo: think of moving this call inside  _transactionsService
                 await _transactionPublisher.PublishAsync(refundTransaction);
             }
+
+            if (transferResult.Transactions.All(x => x.HasError))
+                throw new OperationFailed(transferResult.Transactions.Select(x => x.Error).ToJson());
+
+            IEnumerable<TransferTransactionResult> errorTransactions =
+                transferResult.Transactions.Where(x => x.HasError).ToList();
+
+            if (errorTransactions.Any())
+                throw new OperationPartiallyFailed(errorTransactions.Select(x => x.Error).ToJson());
 
             return await PrepareRefundResult(paymentRequest, transferResult, refundDueDate);
         }
