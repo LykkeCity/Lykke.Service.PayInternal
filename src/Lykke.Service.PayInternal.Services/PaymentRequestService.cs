@@ -103,6 +103,16 @@ namespace Lykke.Service.PayInternal.Services
             return await _paymentRequestRepository.GetAsync(merchantId);
         }
 
+        public async Task<bool> HasAnyPaymentRequestAsync(string merchantId)
+        {
+            return await _paymentRequestRepository.HasAnyPaymentRequestAsync(merchantId);
+        }
+
+        public async Task<IReadOnlyList<IPaymentRequest>> GetByFilterAsync(PaymentsFilter paymentsFilter)
+        {
+            return await _paymentRequestRepository.GetByFilterAsync(paymentsFilter);
+        }
+
         public async Task<IPaymentRequest> GetAsync(string merchantId, string paymentRequestId)
         {
             return await _paymentRequestRepository.GetAsync(merchantId, paymentRequestId);
@@ -192,6 +202,17 @@ namespace Lykke.Service.PayInternal.Services
                 .ExecuteAsync(() => TryCheckoutAsync(paymentRequest, force));
         }
 
+        public async Task UpdateStatusAsync(string merchanttId, string paymentRequestId, 
+            PaymentRequestStatusInfo statusInfo = null)
+        {
+            IPaymentRequest paymentRequest = await _paymentRequestRepository.GetAsync(merchanttId, paymentRequestId);
+
+            if (paymentRequest == null)
+                throw new PaymentRequestNotFoundException(merchanttId, paymentRequestId);
+
+            await UpdateStatusAsync(paymentRequest, statusInfo);
+        }
+
         public async Task UpdateStatusAsync(string walletAddress, PaymentRequestStatusInfo statusInfo = null)
         {
             IPaymentRequest paymentRequest = await _paymentRequestRepository.FindAsync(walletAddress);
@@ -199,16 +220,26 @@ namespace Lykke.Service.PayInternal.Services
             if (paymentRequest == null)
                 throw new PaymentRequestNotFoundException(walletAddress);
 
+            await UpdateStatusAsync(paymentRequest, statusInfo);
+        }
+
+        private async Task UpdateStatusAsync(IPaymentRequest paymentRequest, PaymentRequestStatusInfo statusInfo = null)
+        {
             PaymentRequestStatusInfo newStatusInfo =
-                statusInfo ?? await _paymentRequestStatusResolver.GetStatus(walletAddress);
+                statusInfo ?? await _paymentRequestStatusResolver.GetStatus(paymentRequest.WalletAddress);
 
             PaymentRequestStatus previousStatus = paymentRequest.Status;
             PaymentRequestProcessingError previousProcessingError = paymentRequest.ProcessingError;
 
             paymentRequest.Status = newStatusInfo.Status;
             paymentRequest.PaidDate = newStatusInfo.Date;
-            paymentRequest.PaidAmount = newStatusInfo.Amount;
-            paymentRequest.ProcessingError = paymentRequest.Status == PaymentRequestStatus.Error
+
+            if (newStatusInfo.Amount.HasValue)
+            {
+                paymentRequest.PaidAmount = newStatusInfo.Amount.Value;
+            }
+
+            paymentRequest.ProcessingError = (paymentRequest.Status == PaymentRequestStatus.Error || paymentRequest.Status == PaymentRequestStatus.SettlementError)
                 ? newStatusInfo.ProcessingError
                 : PaymentRequestProcessingError.None;
 

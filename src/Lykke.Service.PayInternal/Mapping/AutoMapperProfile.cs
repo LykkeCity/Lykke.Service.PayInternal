@@ -27,6 +27,7 @@ using Lykke.Service.PayInternal.Models.Transactions.Ethereum;
 using Lykke.Service.PayInternal.Models.Transfers;
 using Lykke.Service.PayInternal.Services.Mapping;
 using Lykke.Service.PayInternal.Models.Cashout;
+using Lykke.Service.PaySettlement.Contracts;
 
 namespace Lykke.Service.PayInternal.Mapping
 {
@@ -122,7 +123,7 @@ namespace Lykke.Service.PayInternal.Mapping
 
             CreateMap<CashoutResult, CashoutResponse>(MemberList.Destination)
                 .ForMember(dest => dest.AssetId,
-                    opt => opt.ResolveUsing<AssetDisplayIdValueResolver, string>(src => src.AssetId));
+                    opt => opt.ResolveUsing<AssetDisplayIdValueResolver, string>(src => src.AssetId));            
 
             CreateMap<ValidateDepositTransferRequest, ValidateDepositRawTransferCommand>(MemberList.Destination)
                 .ForMember(dest => dest.BlockchainWalletAddress, opt => opt.MapFrom(src => src.WalletAddress))
@@ -138,6 +139,8 @@ namespace Lykke.Service.PayInternal.Mapping
             PaymentRequestApiModels();
 
             PaymentRequestMessages();
+
+            CreateSettlementMaps();
         }
 
         private void PaymentRequestApiModels()
@@ -254,6 +257,38 @@ namespace Lykke.Service.PayInternal.Mapping
             CreateMap<NotEnoughFundsOutboundTxRequest, NotEnoughFundsOutTxCommand>(MemberList.Destination);
 
             CreateMap<FailOutboundTxRequest, FailOutTxCommand>(MemberList.Destination);
+        }
+
+        private void CreateSettlementMaps()
+        {
+            CreateMap<SettlementProcessingError, Core.Domain.PaymentRequests.PaymentRequestProcessingError>()
+                .ConvertUsing(value => {
+                    switch (value)
+                    {
+                        case SettlementProcessingError.None:
+                            return Core.Domain.PaymentRequests.PaymentRequestProcessingError.None;
+                        case SettlementProcessingError.Unknown:
+                            return Core.Domain.PaymentRequests.PaymentRequestProcessingError.SettlementUnknown;
+                        case SettlementProcessingError.LowBalanceForExchange:
+                            return Core.Domain.PaymentRequests.PaymentRequestProcessingError.SettlementLowBalanceForExchange;
+                        case SettlementProcessingError.LowBalanceForTransferToMerchant:
+                            return Core.Domain.PaymentRequests.PaymentRequestProcessingError.SettlementLowBalanceForTransferToMerchant;
+                        case SettlementProcessingError.MerchantNotFound:
+                            return Core.Domain.PaymentRequests.PaymentRequestProcessingError.SettlementMerchantNotFound;
+                        case SettlementProcessingError.NoLiquidityForExchange:
+                            return Core.Domain.PaymentRequests.PaymentRequestProcessingError.SettlementNoLiquidityForExchange;
+                        case SettlementProcessingError.ExchangeLeadToNegativeSpread:
+                            return Core.Domain.PaymentRequests.PaymentRequestProcessingError.SettlementExchangeLeadToNegativeSpread;
+                        case SettlementProcessingError.NoTransactionDetails:
+                            return Core.Domain.PaymentRequests.PaymentRequestProcessingError.SettlementNoTransactionDetails;
+                        case SettlementProcessingError.LowAmount:
+                            return Core.Domain.PaymentRequests.PaymentRequestProcessingError.SettlementLowAmount;
+                        case SettlementProcessingError.LowExchangeAmount:
+                            return Core.Domain.PaymentRequests.PaymentRequestProcessingError.SettlementLowExchangeAmount;
+                        default:
+                            return Core.Domain.PaymentRequests.PaymentRequestProcessingError.SettlementUnknown;
+                    }
+                });
         }
     }
 }
