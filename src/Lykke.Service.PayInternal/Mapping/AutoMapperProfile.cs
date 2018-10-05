@@ -125,6 +125,15 @@ namespace Lykke.Service.PayInternal.Mapping
                 .ForMember(dest => dest.AssetId,
                     opt => opt.ResolveUsing<AssetDisplayIdValueResolver, string>(src => src.AssetId));            
 
+            CreateMap<ValidateDepositTransferRequest, ValidateDepositRawTransferCommand>(MemberList.Destination)
+                .ForMember(dest => dest.BlockchainWalletAddress, opt => opt.MapFrom(src => src.WalletAddress))
+                .ForMember(dest => dest.Blockchain,
+                    opt => opt.ResolveUsing<BilBlockchainValueResolver, string>(src => src.Blockchain));
+
+            CreateMap<ValidateDepositRawTransferCommand, ValidateDepositTransferCommand>(MemberList.Destination)
+                .ForMember(dest => dest.WalletAddress,
+                    opt => opt.ResolveUsing<VirtualAddressResolver, string>(src => src.BlockchainWalletAddress));
+
             CreateEthereumPaymentMaps();
 
             PaymentRequestApiModels();

@@ -19,6 +19,9 @@ namespace Lykke.Service.PayInternal.Core.Settings.ServiceSettings
         public AssetPairsLocalStorageSettings AssetPairsLocalStorage { get; set; }
         public CacheSettings CacheSettings { get; set; }
         public RetryPolicySettings RetryPolicy { get; set; }
+        public string LykkeWalletClientId { get; set; } 
+        public BlockchainMapSettings BlockchainIntegrationLayerMap { get; set; }
+        public bool BilTransitionPeriodEnabled { get; set; }
     }
 
     public class AutoSettleSettings
@@ -129,6 +132,11 @@ namespace Lykke.Service.PayInternal.Core.Settings.ServiceSettings
     {
         public int DefaultAttempts { get; set; }
         public int SettlementAttempts { get; set; }
+    }
+
+    public class BlockchainMapSettings
+    {
+        public IDictionary<string, BlockchainType> Values { get; set; }
     }
 
     public enum LogLevel
